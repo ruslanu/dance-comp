@@ -89,12 +89,14 @@ namespace FirstStudioTournamentScheduler
 
 						if (Line.Count() > MIN_REQ_FIELDS)
 						{
-							DancingPair pair = new DancingPair();
-							pair.Team = Team;
-							pair.Dancer1 = Line[(int)FormFields.Dancer1];
-							pair.Dancer2 = Line[(int)FormFields.Dancer2];
-							pair.Instructor = Line[(int)FormFields.Instructor];
-							pair.Rank = Line[(int)FormFields.Rank];
+							DancingPair pair = new DancingPair()
+							{
+								Team = Team,
+								Dancer1 = Line[(int)FormFields.Dancer1],
+								Dancer2 = Line[(int)FormFields.Dancer2],
+								Instructor = Line[(int)FormFields.Instructor],
+								Rank = Line[(int)FormFields.Rank],
+							};
 
 							if (Line.Count() > (int)FormFields.NumWaltz)
 							{
