@@ -7,7 +7,7 @@ using System.IO;
 namespace FirstStudioTournamentScheduler
 {
 
-    class Scheduler
+    public class Scheduler
     {
         List<DancingPair> DancingPairs = new List<DancingPair>();
         enum FormFields
@@ -26,7 +26,7 @@ namespace FirstStudioTournamentScheduler
         Dance Waltz = new Dance { Name = "Waltz", isRythm = false};
         Dance Tango = new Dance { Name = "Tango", isRythm = false};
 
-        int ParseNumDances(string NumDances, string FullLine)
+        public int ParseNumDances(string NumDances, string FullLine)
         {
             int ret = 0;
             if (!String.IsNullOrEmpty(NumDances))

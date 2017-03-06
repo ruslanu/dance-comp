@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirstStudioTournamentScheduler", "FirstStudioTournamentScheduler\FirstStudioTournamentScheduler.csproj", "{A371DEA1-FEC1-42DD-A15D-68CF6E6374EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TournamentTest", "TornamentTest\TournamentTest.csproj", "{93767FFA-4BE2-49D6-8577-8E29C4E945A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{A371DEA1-FEC1-42DD-A15D-68CF6E6374EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A371DEA1-FEC1-42DD-A15D-68CF6E6374EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A371DEA1-FEC1-42DD-A15D-68CF6E6374EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93767FFA-4BE2-49D6-8577-8E29C4E945A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93767FFA-4BE2-49D6-8577-8E29C4E945A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93767FFA-4BE2-49D6-8577-8E29C4E945A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93767FFA-4BE2-49D6-8577-8E29C4E945A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
