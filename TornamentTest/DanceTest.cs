@@ -23,16 +23,18 @@ namespace TournamentTest
 			actual = Waltz.AddPair(pair2, 2);
 			Assert.IsTrue(actual, "Function should return true.");
 
-			actual = Waltz.AddPair(pair3, 2);
+			actual = Waltz.AddPair(pair3, 3);
 			Assert.IsTrue(actual, "Function should return true.");
+
+			Assert.AreEqual(6, Waltz.InitialPool.Pairs.Count, "Number of pairs added should match.");
 
 			Assert.AreEqual(5, Waltz.Dancers.Count, "Number of dancers should match.");
 
 			Assert.AreEqual(1, Waltz.Dancers["Petya"], "Number of heats for dancer should match.");
 			Assert.AreEqual(3, Waltz.Dancers["Maria"], "Number of heats for dancer should match.");
 			Assert.AreEqual(2, Waltz.Dancers["Nikolai"], "Number of heats for dancer should match.");
-			Assert.AreEqual(2, Waltz.Dancers["Kostya"], "Number of heats for dancer should match.");
-			Assert.AreEqual(2, Waltz.Dancers["Anton"], "Number of heats for dancer should match.");
+			Assert.AreEqual(3, Waltz.Dancers["Kostya"], "Number of heats for dancer should match.");
+			Assert.AreEqual(3, Waltz.Dancers["Anton"], "Number of heats for dancer should match.");
 		}
 
 		[TestMethod]
@@ -53,7 +55,9 @@ namespace TournamentTest
 			actual = Waltz.AddPair(pair3, 2);
 			Assert.IsFalse(actual, "Function should return false with same dancer.");
 
-			Assert.AreEqual(0, Waltz.Dancers.Count, "No pairs should be added during test.");
+			Assert.AreEqual(0, Waltz.InitialPool.Pairs.Count, "No pairs should be added during test.");
+
+			Assert.AreEqual(0, Waltz.Dancers.Count, "No dancers should be added during test.");
 		}
 	}
 }

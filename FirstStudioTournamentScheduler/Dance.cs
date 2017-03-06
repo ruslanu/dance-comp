@@ -10,7 +10,7 @@ namespace FirstStudioTournamentScheduler
 		public string Name;
 		public bool isRythm;
 
-		public List<DancingPair> Pairs = new List<DancingPair>();
+		public Heat InitialPool = new Heat();
 		public Dictionary<string, int> Dancers = new Dictionary<string, int>();
 
 		public bool AddPair(DancingPair Pair, int NumDances)
@@ -19,7 +19,7 @@ namespace FirstStudioTournamentScheduler
 			{
 				for (int i = 0; i < NumDances; i++)
 				{
-					Pairs.Add(Pair);
+					InitialPool.Pairs.Add(Pair);
 
 					// Accumulate statistics
 					if (!Dancers.ContainsKey(Pair.Dancer1))
@@ -43,5 +43,6 @@ namespace FirstStudioTournamentScheduler
 			}
 			return Pair.IsValidDancers;
 		}
+
 	}
 }

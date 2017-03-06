@@ -11,6 +11,10 @@ namespace FirstStudioTournamentScheduler
 
     public enum Teams { Blue, Red, White }
 
+	public class Heat
+	{
+		public List<DancingPair> Pairs = new List<DancingPair>();
+	}
 
 
 }
