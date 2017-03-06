@@ -9,12 +9,8 @@ namespace FirstStudioTournamentScheduler
     {
     }
 
-    enum Teams { Blue, Red, White }
+    public enum Teams { Blue, Red, White }
 
 
-    class Dance
-    {
-        public string Name;
-        public bool isRythm;
-    }
+
 }
