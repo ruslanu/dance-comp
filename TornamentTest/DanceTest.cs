@@ -17,7 +17,7 @@ namespace TournamentTest
 			DancingPair pair2 = new DancingPair { Team = Teams.Blue, Dancer1 = "Maria", Dancer2 = "Nikolai", Instructor = "Vasya", Rank = "American Bronze" };
 			DancingPair pair3 = new DancingPair { Team = Teams.Blue, Dancer1 = "Kostya", Dancer2 = "Anton", Instructor = "Vasya", Rank = "American Beginner" };
 
-			Waltz.AddPair(pair1, 2);
+			Waltz.AddPair(pair1, 1);
 			Waltz.AddPair(pair2, 2);
 			Waltz.AddPair(pair3, 2);
 
