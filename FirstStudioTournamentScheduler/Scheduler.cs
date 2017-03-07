@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using System.IO;
+using log4net;
+using log4net.Config;
 
 namespace FirstStudioTournamentScheduler
 {
@@ -87,7 +89,7 @@ namespace FirstStudioTournamentScheduler
 					{
 						Teams Team = (Teams)Enum.Parse(typeof(Teams), Line[(int)FormFields.Team], true);
 
-						if (Line.Count() > MIN_REQ_FIELDS)
+						if (Line.Count() >= MIN_REQ_FIELDS)
 						{
 							DancingPair pair = new DancingPair()
 							{
@@ -158,6 +160,7 @@ namespace FirstStudioTournamentScheduler
 		[STAThread]
 		static void Main()
 		{
+			XmlConfigurator.Configure();
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new Form1());

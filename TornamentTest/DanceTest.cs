@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using log4net.Config;
 
 using FirstStudioTournamentScheduler;
 
@@ -8,6 +9,20 @@ namespace TournamentTest
 	[TestClass]
 	public class DanceTest
 	{
+		private TestContext testContext;
+		public TestContext TestContext
+		{
+			get { return testContext; }
+			set { testContext = value; }
+		}
+
+		[AssemblyInitialize()]
+		public static void InitializeAssembly(TestContext ctx)
+		{
+			// Configure log4net based on the App.config
+			XmlConfigurator.Configure();
+		}
+
 		[TestMethod]
 		public void AddPair_PairsAdded()
 		{

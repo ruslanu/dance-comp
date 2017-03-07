@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using log4net;
 
 namespace FirstStudioTournamentScheduler
 {
 	public class Dance
 	{
+		private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 		public string Name;
 		public bool isRythm;
 
@@ -20,6 +23,7 @@ namespace FirstStudioTournamentScheduler
 
 		public bool AddPair(DancingPair Pair, int NumDances)
 		{
+			log.InfoFormat("{0}: Adding pair <{1}>-<{2}> num {3}", Name, Pair.Dancer1, Pair.Dancer2, NumDances);
 			if (Pair.IsValidDancers)
 			{
 				for (int i = 0; i < NumDances; i++)
