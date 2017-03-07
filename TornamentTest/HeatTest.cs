@@ -6,7 +6,7 @@ using FirstStudioTournamentScheduler;
 namespace TornamentTest
 {
 	[TestClass]
-	public class TypesTest
+	public class HeatTest
 	{
 		[TestMethod]
 		public void Heat_CanAddPair_NewDancers_ExpectedTrue()

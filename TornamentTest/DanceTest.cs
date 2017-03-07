@@ -130,13 +130,30 @@ namespace TournamentTest
 
 			// Make 5 attempts to get heat, at least once it should be not first
 			bool bRandomHeatFound = false;
-			for(int i = 0; !bRandomHeatFound && i < 5; i++)
+			for (int i = 0; !bRandomHeatFound && i < 5; i++)
 			{
 				Heat curr = Waltz.FindHeatForPair(pair2);
 				bRandomHeatFound = !Object.ReferenceEquals(curr, Waltz.Heats[0]);
 			}
 
 			Assert.IsTrue(bRandomHeatFound, "Pairs should be populated to heats in random order.");
+		}
+
+		[TestMethod]
+		public void Dance_PopulateHeats_HeatsPopulated()
+		{
+			Dance Waltz = new Dance { Name = "Waltz", isRythm = false };
+
+			DancingPair pair1 = new DancingPair { Team = Teams.Blue, Dancer1 = "Petya", Dancer2 = "Maria", Instructor = "Vasya", Rank = "American Beginner" };
+			DancingPair pair2 = new DancingPair { Team = Teams.Blue, Dancer1 = "Maria", Dancer2 = "Nikolai", Instructor = "Vasya", Rank = "American Bronze" };
+			DancingPair pair3 = new DancingPair { Team = Teams.Blue, Dancer1 = "Kostya", Dancer2 = "Anton", Instructor = "Vasya", Rank = "American Beginner" };
+
+			Waltz.AddPair(new DancingPair { Team = Teams.Blue, Dancer1 = "Eileen" }, 1);
+			Waltz.AddPair(pair2, 9);
+			Waltz.AddPair(pair3, 3);
+
+			bool actual = Waltz.PopulateHeats();
+			Assert.IsTrue(actual, "PopulateHeats() should succeed");
 		}
 	}
 }

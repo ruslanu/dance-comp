@@ -58,7 +58,7 @@
   <ItemGroup>
     <Compile Include="DanceTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypesTest.cs" />
+    <Compile Include="HeatTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FirstStudioTournamentScheduler\FirstStudioTournamentScheduler.csproj">

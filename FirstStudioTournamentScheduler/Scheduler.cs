@@ -152,6 +152,8 @@ namespace FirstStudioTournamentScheduler
 					}
 				}
 			}
+			sr.Close();
+			Waltz.PopulateHeats();
 		}
 
 		/// <summary>

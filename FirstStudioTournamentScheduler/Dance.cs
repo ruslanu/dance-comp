@@ -21,6 +21,8 @@ namespace FirstStudioTournamentScheduler
 		private const int MIN_DESIRED_CAPACITY = 4;
 		private const int MAX_DESIRED_CAPACITY = 6;
 
+		private Random random = new Random();
+
 		public bool AddPair(DancingPair Pair, int NumDances)
 		{
 			log.InfoFormat("{0}: Adding pair <{1}>-<{2}> num {3}", Name, Pair.Dancer1, Pair.Dancer2, NumDances);
@@ -76,26 +78,27 @@ namespace FirstStudioTournamentScheduler
 		{
 			Heat result = null;
 
-			Random rnd = new Random();
-
-			// Try random heat 50 times having max desired capacity in mind
-			for (int i = 0; result == null && i < 50; i++)
+			if (Heats.Count > 0)
 			{
-				int index = rnd.Next(Heats.Count);
-				Heat curr = Heats[index];
-				if (curr.Pairs.Count < MAX_DESIRED_CAPACITY && curr.CanAddPair(pair))
+				// Try random heat 50 times having max desired capacity in mind
+				for (int i = 0; result == null && i < 50; i++)
 				{
-					result = curr;
+					int index = random.Next(Heats.Count);
+					Heat curr = Heats[index];
+					if (curr.Pairs.Count < MAX_DESIRED_CAPACITY && curr.CanAddPair(pair))
+					{
+						result = curr;
+					}
 				}
-			}
 
-			// If not found - try to find any heat despite max desired capacity
-			for (int i = 0; result == null && i < Heats.Count; i++)
-			{
-				Heat curr = Heats[i];
-				if (curr.CanAddPair(pair))
+				// If not found - try to find any heat despite max desired capacity
+				for (int i = 0; result == null && i < Heats.Count; i++)
 				{
-					result = curr;
+					Heat curr = Heats[i];
+					if (curr.CanAddPair(pair))
+					{
+						result = curr;
+					}
 				}
 			}
 
@@ -104,13 +107,14 @@ namespace FirstStudioTournamentScheduler
 
 		public bool SeedPairsToHeats()
 		{
-			foreach (DancingPair pair in InitialPool.Pairs)
+			while(InitialPool.Pairs.Count > 0)
 			{
+				DancingPair pair = InitialPool.Pairs[0];
 				Heat heat = FindHeatForPair(pair);
 				if (heat != null)
 				{
 					heat.Pairs.Add(pair);
-					InitialPool.Pairs.Remove(pair);
+					InitialPool.Pairs.RemoveAt(0);
 				}
 				else
 				{
@@ -123,18 +127,112 @@ namespace FirstStudioTournamentScheduler
 			return InitialPool.Pairs.Count == 0;
 		}
 
+		public void DispatchHighAttendeeHeats()
+		{
+			List<Heat> tmpList = Heats.FindAll(h => h.Pairs.Count > MAX_DESIRED_CAPACITY);
+			Heats.RemoveAll(h => tmpList.Contains(h));
+			log.InfoFormat("High atendees heats num = {0} moved from main list num = {1}", tmpList.Count, Heats.Count);
+
+			while (tmpList.Count > 0)
+			{
+				Heat currHeat = tmpList[0];
+				log.InfoFormat("Attempting to lower attendees in temporary heat ***, num = {0}", currHeat.Pairs.Count);
+				while (currHeat.Pairs.Count > MAX_DESIRED_CAPACITY)
+				{
+					bool anyfound = false;
+					foreach(DancingPair pair in currHeat.Pairs)
+					{
+						Heat allowedHeat = FindHeatForPair(pair);
+						if (allowedHeat != null)
+						{
+							anyfound = true;
+							log.InfoFormat("Moving out pair <{1}>-<{2}>", pair.Dancer1, pair.Dancer2);
+							allowedHeat.Pairs.Add(pair);
+							currHeat.Pairs.Remove(pair);
+						}
+					}
+					if (!anyfound)
+					{
+						break;
+					}
+				}
+				log.InfoFormat("Moving back temporary heat ***, num = {0}", currHeat.Pairs.Count);
+				Heats.Add(currHeat);
+				tmpList.RemoveAt(0);
+			}
+		}
+
+		public void DispatchLowAttendeesHeats()
+		{
+			// Remove empty heats
+			log.InfoFormat("Number of heats in <{0}> before removal of empty: {1}", Name, Heats.Count);
+			Heats.RemoveAll(h => h.Pairs.Count == 0);
+			log.InfoFormat("Number of heats in <{0}> after removal of empty: {1}", Name, Heats.Count);
+
+			if (Heats.Count > MinHeats)
+			{
+				List<Heat> tmpList = Heats.FindAll(h => h.Pairs.Count < MIN_DESIRED_CAPACITY);
+				Heats.RemoveAll(h => tmpList.Contains(h));
+				log.InfoFormat("Low atendees heats num = {0} moved from main list num = {1}", tmpList.Count, Heats.Count);
+
+				while (tmpList.Count > 0)
+				{
+					Heat currHeat = tmpList[0];
+					Dictionary<DancingPair, Heat> dispatchList = new Dictionary<DancingPair, Heat>();
+					foreach (DancingPair pair in currHeat.Pairs)
+					{
+						Heat allowedHeat = FindHeatForPair(pair);
+						if (allowedHeat != null)
+						{
+							dispatchList.Add(pair, allowedHeat);
+						}
+						else
+						{
+							break;
+						}
+					}
+					if (dispatchList.Count != currHeat.Pairs.Count)
+					{
+						log.InfoFormat("Cannot dispatch temporary heat ***, will move to main list.");
+						Heats.Add(currHeat);
+					}
+					else
+					{
+						log.InfoFormat("Temporary heat *** will be dispatched to remaining heats.");
+						foreach (var p in dispatchList)
+						{
+							p.Value.Pairs.Add(p.Key);
+						}
+					}
+					currHeat.DumpToLog("Temporary heat ***");
+					tmpList.RemoveAt(0);
+				}
+			}
+			else
+			{
+				log.Info("Low attendee heats not dispatched because number of heats minimal already.");
+			}
+		}
+
 		public bool PopulateHeats()
 		{
 			log.InfoFormat("Populate heats for <{0}>...", Name);
 			bool ret = CreateInitialHeats();
 			if (ret)
 			{
+				InitialPool.DumpToLog("Before sorting");
 				ret = SeedPairsToHeats();
 				if (ret)
 				{
-					// TODO: Try to free up some space in overfilled heats (num > 6)
+					DumpHeatsToLog("After first seeding");
 
-					// TODO: Remove empty and try to dispatch low capacity heats (num < 4)
+					// Try to free up some space in overfilled heats (num > 6)
+					DispatchHighAttendeeHeats();
+					DumpHeatsToLog("After dispatching high attendee heats");
+
+					// Remove empty and try to dispatch low capacity heats (num < 4)
+					DispatchLowAttendeesHeats();
+					DumpHeatsToLog("After dispatching low attendee heats");
 				}
 			}
 			else
@@ -143,6 +241,15 @@ namespace FirstStudioTournamentScheduler
 			}
 
 			return ret;
+		}
+
+		public void DumpHeatsToLog(string title)
+		{
+			log.InfoFormat("Printing Heats for dance <{0}>, stage <{1}> total {2} heats.", Name, title, Heats.Count);
+			for (int i = 0; i < Heats.Count; i++)
+			{
+				Heats[i].DumpToLog(String.Format("Heat #{0}", i + 1));
+			}
 		}
 	}
 }
