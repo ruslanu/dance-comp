@@ -146,9 +146,10 @@ namespace FirstStudioTournamentScheduler
 						if (allowedHeat != null)
 						{
 							anyfound = true;
-							log.InfoFormat("Moving out pair <{1}>-<{2}>", pair.Dancer1, pair.Dancer2);
+							log.InfoFormat("Moving out pair <{0}>-<{1}>", pair.Dancer1, pair.Dancer2);
 							allowedHeat.Pairs.Add(pair);
 							currHeat.Pairs.Remove(pair);
+							break;
 						}
 					}
 					if (!anyfound)
@@ -206,6 +207,8 @@ namespace FirstStudioTournamentScheduler
 					}
 					currHeat.DumpToLog("Temporary heat ***");
 					tmpList.RemoveAt(0);
+
+					// TODO: If total number of heats qual to minimal, return all tmp heats to main list and stop iterations.
 				}
 			}
 			else
@@ -233,6 +236,10 @@ namespace FirstStudioTournamentScheduler
 					// Remove empty and try to dispatch low capacity heats (num < 4)
 					DispatchLowAttendeesHeats();
 					DumpHeatsToLog("After dispatching low attendee heats");
+
+					// Second attempt to level down overfilled heats (num > 6)
+					DispatchHighAttendeeHeats();
+					DumpHeatsToLog("After second dispatching (leveling down) high attendee heats");
 				}
 			}
 			else
