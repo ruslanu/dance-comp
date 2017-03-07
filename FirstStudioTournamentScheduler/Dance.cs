@@ -16,7 +16,7 @@ namespace FirstStudioTournamentScheduler
 		public Heat InitialPool = new Heat();
 		public List<Heat> Heats = new List<Heat>();
 		public Dictionary<string, int> Dancers = new Dictionary<string, int>();
-		private int MinHeats = 0; // Will be equal to number of heats top dancer applied to
+		public int MinHeats = 0; // Will be equal to number of heats top dancer applied to
 
 		private const int MIN_DESIRED_CAPACITY = 4;
 		private const int MAX_DESIRED_CAPACITY = 6;
@@ -60,23 +60,19 @@ namespace FirstStudioTournamentScheduler
 			int InitialHeats = Math.Max(MinHeats, 15);
 
 			string TopDancer = Dancers.First(d => d.Value == MinHeats).Key;
-			Console.WriteLine("For dance <{0}> top dancer is <{1}> with {2} heats participation. {3} heats will be initially created.",
+			log.InfoFormat("For dance <{0}> top dancer is <{1}> with {2} heats participation. {3} heats will be initially created.",
 				Name, TopDancer, MinHeats, InitialHeats);
 
-			Heats = new List<Heat>(InitialHeats);
+			// Each heat should be new reference
+			for (int i = 0; i < InitialHeats; i++)
+			{
+				Heats.Add(new Heat());
+			}
 
 			return Heats.Count > 0;
 		}
 
-		private bool CanAddToHeat(Heat heat, DancingPair pair)
-		{
-			List<string> existing = heat.Pairs.ConvertAll(a => a.Dancer1);
-			existing.AddRange(heat.Pairs.ConvertAll(a => a.Dancer2));
-
-			return !existing.Any(a => String.Equals(a, pair.Dancer1) || String.Equals(a, pair.Dancer2));
-		}
-
-		private Heat FindHeatForPair(DancingPair pair)
+		public Heat FindHeatForPair(DancingPair pair)
 		{
 			Heat result = null;
 
@@ -87,7 +83,7 @@ namespace FirstStudioTournamentScheduler
 			{
 				int index = rnd.Next(Heats.Count);
 				Heat curr = Heats[index];
-				if (curr.Pairs.Count < MAX_DESIRED_CAPACITY && CanAddToHeat(curr, pair))
+				if (curr.Pairs.Count < MAX_DESIRED_CAPACITY && curr.CanAddPair(pair))
 				{
 					result = curr;
 				}
@@ -97,7 +93,7 @@ namespace FirstStudioTournamentScheduler
 			for (int i = 0; result == null && i < Heats.Count; i++)
 			{
 				Heat curr = Heats[i];
-				if (CanAddToHeat(curr, pair))
+				if (curr.CanAddPair(pair))
 				{
 					result = curr;
 				}
@@ -118,7 +114,7 @@ namespace FirstStudioTournamentScheduler
 				}
 				else
 				{
-					Console.WriteLine("Fatal error: cannot find a heat for pair {0}: <{1}> - <{2}>!", pair.Team, pair.Dancer1, pair.Dancer2);
+					log.ErrorFormat("Fatal error: cannot find a heat for pair {0}: <{1}> - <{2}>!", pair.Team, pair.Dancer1, pair.Dancer2);
 					break;
 				}
 			}
@@ -129,6 +125,7 @@ namespace FirstStudioTournamentScheduler
 
 		public bool PopulateHeats()
 		{
+			log.InfoFormat("Populate heats for <{0}>...", Name);
 			bool ret = CreateInitialHeats();
 			if (ret)
 			{
@@ -142,7 +139,7 @@ namespace FirstStudioTournamentScheduler
 			}
 			else
 			{
-				Console.WriteLine("Cannot populate dance {0} - no heats created for the dance!", Name);
+				log.ErrorFormat("Cannot populate dance {0} - no heats created for the dance!", Name);
 			}
 
 			return ret;
