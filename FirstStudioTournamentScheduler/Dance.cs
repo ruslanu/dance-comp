@@ -21,8 +21,6 @@ namespace FirstStudioTournamentScheduler
 		private const int MIN_DESIRED_CAPACITY = 4;
 		private const int MAX_DESIRED_CAPACITY = 6;
 
-		private Random random = new Random();
-
 		public void IncludeDancerInStats(string Dancer, int NumDances)
 		{
 			string upperdancer = Dancer.ToUpperInvariant();
@@ -53,19 +51,21 @@ namespace FirstStudioTournamentScheduler
 		public bool CreateInitialHeats()
 		{
 			// Start with at least 15 heats but no less than top dancer
-			MinHeats = Dancers.Values.Max();
-			int InitialHeats = Math.Max(MinHeats, 15);
-
-			string TopDancer = Dancers.First(d => d.Value == MinHeats).Key;
-			log.InfoFormat("For dance <{0}> top dancer is <{1}> with {2} heats participation. {3} heats will be initially created.",
-				Name, TopDancer, MinHeats, InitialHeats);
-
-			// Each heat should be new reference
-			for (int i = 0; i < InitialHeats; i++)
+			if (InitialPool.Pairs.Count > 0)
 			{
-				Heats.Add(new Heat());
-			}
+				MinHeats = Dancers.Values.Max();
+				int InitialHeats = Math.Max(MinHeats, 15);
 
+				string TopDancer = Dancers.First(d => d.Value == MinHeats).Key;
+				log.InfoFormat("For dance <{0}> top dancer is <{1}> with {2} heats participation. {3} heats will be initially created.",
+					Name, TopDancer, MinHeats, InitialHeats);
+
+				// Each heat should be new reference
+				for (int i = 0; i < InitialHeats; i++)
+				{
+					Heats.Add(new Heat());
+				}
+			}
 			return Heats.Count > 0;
 		}
 
@@ -78,7 +78,7 @@ namespace FirstStudioTournamentScheduler
 				// Try random heat 50 times having max desired capacity in mind
 				for (int i = 0; result == null && i < 50; i++)
 				{
-					int index = random.Next(Heats.Count);
+					int index = Scheduler.glbRandom.Next(Heats.Count);
 					Heat curr = Heats[index];
 					if (curr.Pairs.Count < MAX_DESIRED_CAPACITY && curr.CanAddPair(pair))
 					{

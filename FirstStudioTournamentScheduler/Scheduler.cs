@@ -11,6 +11,8 @@ namespace FirstStudioTournamentScheduler
 
 	public class Scheduler
 	{
+		public static Random glbRandom = new Random();
+
 		List<DancingPair> DancingPairs = new List<DancingPair>();
 		enum FormFields
 		{
@@ -61,7 +63,7 @@ namespace FirstStudioTournamentScheduler
 		public void ReadParticipants()
 		{
 			// Browse for file
-			string filename = "C:\\Test\\entryforms.csv";
+			string filename = "entryforms.csv";
 
 			if (!File.Exists(filename))
 			{
@@ -153,7 +155,14 @@ namespace FirstStudioTournamentScheduler
 				}
 			}
 			sr.Close();
-			Waltz.PopulateHeats();
+
+			MatchBlock SmoothDances = new MatchBlock("Smooth Dances");
+			SmoothDances.Dances = new List<Dance> { Waltz, Tango, Foxtrot };
+			SmoothDances.GenerateSchedule();
+
+			MatchBlock RythmDances = new MatchBlock("Rythm Dances");
+			RythmDances.Dances = new List<Dance> { Chacha, Rumba, Swing, Hustle, Bolero, Bachata };
+			RythmDances.GenerateSchedule();
 		}
 
 		/// <summary>
