@@ -17,7 +17,8 @@ namespace FirstStudioTournamentScheduler
 		{
 			get
 			{
-				return !String.IsNullOrEmpty(Dancer1) && !String.IsNullOrEmpty(Dancer2) && !String.Equals(Dancer1, Dancer2);
+				return !String.IsNullOrEmpty(Dancer1) && !String.IsNullOrEmpty(Dancer2) &&
+					!String.Equals(Dancer1, Dancer2, StringComparison.InvariantCultureIgnoreCase);
 			}
 		}
 	}

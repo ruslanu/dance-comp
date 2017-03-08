@@ -17,7 +17,9 @@ namespace FirstStudioTournamentScheduler
 			List<string> existing = Pairs.ConvertAll(a => a.Dancer1);
 			existing.AddRange(Pairs.ConvertAll(a => a.Dancer2));
 
-			return !existing.Any(a => String.Equals(a, pair.Dancer1) || String.Equals(a, pair.Dancer2));
+			return !existing.Any(a =>
+				String.Equals(a, pair.Dancer1, StringComparison.InvariantCultureIgnoreCase) ||
+				String.Equals(a, pair.Dancer2, StringComparison.InvariantCultureIgnoreCase));
 		}
 
 		public void DumpToLog(string title)

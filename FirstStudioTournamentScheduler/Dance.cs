@@ -23,34 +23,29 @@ namespace FirstStudioTournamentScheduler
 
 		private Random random = new Random();
 
+		public void IncludeDancerInStats(string Dancer, int NumDances)
+		{
+			string upperdancer = Dancer.ToUpperInvariant();
+			if (!Dancers.ContainsKey(upperdancer))
+			{
+				Dancers.Add(upperdancer, NumDances);
+			}
+			else
+			{
+				Dancers[upperdancer] += NumDances;
+			}
+		}
+
 		public bool AddPair(DancingPair Pair, int NumDances)
 		{
 			log.InfoFormat("{0}: Adding pair <{1}>-<{2}> num {3}", Name, Pair.Dancer1, Pair.Dancer2, NumDances);
 			if (Pair.IsValidDancers)
 			{
-				for (int i = 0; i < NumDances; i++)
-				{
-					InitialPool.Pairs.Add(Pair);
+				InitialPool.Pairs.AddRange(Enumerable.Repeat(Pair, NumDances));
 
-					// Accumulate statistics
-					if (!Dancers.ContainsKey(Pair.Dancer1))
-					{
-						Dancers.Add(Pair.Dancer1, 1);
-					}
-					else
-					{
-						Dancers[Pair.Dancer1]++;
-					}
-
-					if (!Dancers.ContainsKey(Pair.Dancer2))
-					{
-						Dancers.Add(Pair.Dancer2, 1);
-					}
-					else
-					{
-						Dancers[Pair.Dancer2]++;
-					}
-				}
+				// Accumulate statistics
+				IncludeDancerInStats(Pair.Dancer1, NumDances);
+				IncludeDancerInStats(Pair.Dancer2, NumDances);
 			}
 			return Pair.IsValidDancers;
 		}
