@@ -61,7 +61,7 @@ namespace FirstStudioTournamentScheduler
 		public void ReadParticipants()
 		{
 			// Browse for file
-			string filename = "C:\\Test\\foo.csv";
+			string filename = "C:\\Test\\entryforms.csv";
 
 			if (!File.Exists(filename))
 			{

@@ -88,13 +88,13 @@ namespace FirstStudioTournamentScheduler
                 // heat, if the amount of participants is light, or the 7 per heat, if it is heavy in participants.
                 int accumulatedMaxDances = 0;
                 int waltzDances = 0;
-                int tangoDances = 0;
-                int foxtrotDances = 0;
-                int rumbaDances = 0;
-                int chachaDances = 0;
-                int swingDances = 0;
-                int hustleDances = 0;
-                int bachataDances = 0;
+                //int tangoDances = 0;
+                //int foxtrotDances = 0;
+                //int rumbaDances = 0;
+                //int chachaDances = 0;
+                //int swingDances = 0;
+                //int hustleDances = 0;
+                //int bachataDances = 0;
 
 
                 for (i = 0; i < totalParticipants; i++)
