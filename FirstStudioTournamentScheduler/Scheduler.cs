@@ -98,89 +98,80 @@ namespace FirstStudioTournamentScheduler
 			// Content of each line in .csv file
 			// Team, Dancer1, Dancer2, Instructor, Rank/Comment, dances...
 
-			int NumFields = Enum.GetValues(typeof(FormFields)).Length;
-
 			foreach (string CurrLine in EntryForm)
 			{
 				string[] Line = CurrLine.Split(','); // Read file content line by line;
 
-				if (Line.Count() > 0)
+				Teams Team;
+				// We need to do our best effort to read line and report syntax anomaly
+				if (Line.Count() >= MIN_REQ_FIELDS && Enum.TryParse(Line[(int)FormFields.Team], true, out Team))
 				{
-					try
+					DancingPair pair = new DancingPair()
 					{
-						Teams Team = (Teams)Enum.Parse(typeof(Teams), Line[(int)FormFields.Team], true);
+						Team = Team,
+						Dancer1 = Line[(int)FormFields.Dancer1],
+						Dancer2 = Line[(int)FormFields.Dancer2],
+						Instructor = Line[(int)FormFields.Instructor],
+						Rank = Line[(int)FormFields.Rank],
+					};
 
-						if (Line.Count() >= MIN_REQ_FIELDS)
+					if (pair.IsValidDancers)
+					{
+						if (Line.Count() > (int)FormFields.NumWaltz)
 						{
-							DancingPair pair = new DancingPair()
-							{
-								Team = Team,
-								Dancer1 = Line[(int)FormFields.Dancer1],
-								Dancer2 = Line[(int)FormFields.Dancer2],
-								Instructor = Line[(int)FormFields.Instructor],
-								Rank = Line[(int)FormFields.Rank],
-							};
+							CheckAndApplyPairToDance(Waltz, pair, Line[(int)FormFields.NumWaltz], CurrLine);
+						}
 
-							if (pair.IsValidDancers)
-							{
-								if (Line.Count() > (int)FormFields.NumWaltz)
-								{
-									CheckAndApplyPairToDance(Waltz, pair, Line[(int)FormFields.NumWaltz], CurrLine);
-								}
+						if (Line.Count() > (int)FormFields.NumTango)
+						{
+							CheckAndApplyPairToDance(Tango, pair, Line[(int)FormFields.NumTango], CurrLine);
+						}
 
-								if (Line.Count() > (int)FormFields.NumTango)
-								{
-									CheckAndApplyPairToDance(Tango, pair, Line[(int)FormFields.NumTango], CurrLine);
-								}
+						if (Line.Count() > (int)FormFields.NumFoxtrot)
+						{
+							CheckAndApplyPairToDance(Foxtrot, pair, Line[(int)FormFields.NumFoxtrot], CurrLine);
+						}
 
-								if (Line.Count() > (int)FormFields.NumFoxtrot)
-								{
-									CheckAndApplyPairToDance(Foxtrot, pair, Line[(int)FormFields.NumFoxtrot], CurrLine);
-								}
+						if (Line.Count() > (int)FormFields.NumChacha)
+						{
+							CheckAndApplyPairToDance(Chacha, pair, Line[(int)FormFields.NumChacha], CurrLine);
+						}
 
-								if (Line.Count() > (int)FormFields.NumChacha)
-								{
-									CheckAndApplyPairToDance(Chacha, pair, Line[(int)FormFields.NumChacha], CurrLine);
-								}
+						if (Line.Count() > (int)FormFields.NumRumba)
+						{
+							CheckAndApplyPairToDance(Rumba, pair, Line[(int)FormFields.NumRumba], CurrLine);
+						}
 
-								if (Line.Count() > (int)FormFields.NumRumba)
-								{
-									CheckAndApplyPairToDance(Rumba, pair, Line[(int)FormFields.NumRumba], CurrLine);
-								}
+						if (Line.Count() > (int)FormFields.NumSwing)
+						{
+							CheckAndApplyPairToDance(Swing, pair, Line[(int)FormFields.NumSwing], CurrLine);
+						}
 
-								if (Line.Count() > (int)FormFields.NumSwing)
-								{
-									CheckAndApplyPairToDance(Swing, pair, Line[(int)FormFields.NumSwing], CurrLine);
-								}
+						if (Line.Count() > (int)FormFields.NumHustle)
+						{
+							CheckAndApplyPairToDance(Hustle, pair, Line[(int)FormFields.NumHustle], CurrLine);
+						}
 
-								if (Line.Count() > (int)FormFields.NumHustle)
-								{
-									CheckAndApplyPairToDance(Hustle, pair, Line[(int)FormFields.NumHustle], CurrLine);
-								}
+						if (Line.Count() > (int)FormFields.NumBolero)
+						{
+							CheckAndApplyPairToDance(Bolero, pair, Line[(int)FormFields.NumBolero], CurrLine);
+						}
 
-								if (Line.Count() > (int)FormFields.NumBolero)
-								{
-									CheckAndApplyPairToDance(Bolero, pair, Line[(int)FormFields.NumBolero], CurrLine);
-								}
-
-								if (Line.Count() > (int)FormFields.NumBachata)
-								{
-									CheckAndApplyPairToDance(Bachata, pair, Line[(int)FormFields.NumBachata], CurrLine);
-								}
-							}
-							else
-							{
-								log.ErrorFormat("Unable to read valid dancers from <{0}>", CurrLine);
-							}
+						if (Line.Count() > (int)FormFields.NumBachata)
+						{
+							CheckAndApplyPairToDance(Bachata, pair, Line[(int)FormFields.NumBachata], CurrLine);
 						}
 					}
-					catch (ArgumentException)
+					else
 					{
-						log.ErrorFormat("Unable to parse team <{0}>", Line[0]);
+						log.ErrorFormat("Unable to read valid dancers from <{0}>", CurrLine);
 					}
 				}
+				else if (Line.Count() > 0 && CurrLine.Length > 0)
+				{
+					log.ErrorFormat("Unable to parse entry data <{0}>", CurrLine);
+				}
 			}
-
 		}
 
 		public void GenerateMatchSchedule()
