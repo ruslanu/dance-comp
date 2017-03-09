@@ -21,7 +21,7 @@ namespace FirstStudioTournamentScheduler
 
         private void btn_ReadParticipants_Click(object sender, EventArgs e)
         {
-            Scheduler.ReadParticipants();
+            Scheduler.GenerateMatchSchedule();
         }
     }
 }

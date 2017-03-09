@@ -12,6 +12,8 @@ namespace FirstStudioTournamentScheduler
 
 	public class Scheduler
 	{
+		private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 		public string SourceFileName = "entryforms.csv";
 		public string DestFileName = "matchschedule.txt";
 
@@ -61,7 +63,7 @@ namespace FirstStudioTournamentScheduler
 				}
 				catch (FormatException)
 				{
-					Console.WriteLine("Unable to parse num of dances {0} in {1}", NumDances, FullLine);
+					log.ErrorFormat("Unable to parse num of dances {0} in {1}", NumDances, FullLine);
 				}
 			}
 			return ret;
@@ -79,6 +81,7 @@ namespace FirstStudioTournamentScheduler
 			sb.AppendLine();
 			sb.AppendLine("End of competition.");
 
+			log.InfoFormat("Writing to file <{0}>", DestFileName);
 			File.WriteAllText(DestFileName, sb.ToString());
 		}
 
@@ -87,12 +90,12 @@ namespace FirstStudioTournamentScheduler
 			// Browse for file
 			if (!File.Exists(SourceFileName))
 			{
-				Console.WriteLine("Input file {0} not found!", SourceFileName);
+				log.ErrorFormat("Input file {0} not found!", SourceFileName);
 				return;
 			}
 
-			// Open file
-			StreamReader sr = new StreamReader(SourceFileName);
+			log.InfoFormat("Reading file <{0}>", SourceFileName);
+			string[] EntryForm = File.ReadAllLines(SourceFileName);
 
 			// Store in data structure
 			// Content of each line in .csv file
@@ -100,9 +103,8 @@ namespace FirstStudioTournamentScheduler
 
 			int NumFields = Enum.GetValues(typeof(FormFields)).Length;
 
-			while (!sr.EndOfStream)
+			foreach (string CurrLine in EntryForm)
 			{
-				string CurrLine = sr.ReadLine();
 				string[] Line = CurrLine.Split(','); // Read file content line by line;
 
 				if (Line.Count() > 0)
@@ -170,11 +172,17 @@ namespace FirstStudioTournamentScheduler
 					}
 					catch (ArgumentException)
 					{
-						Console.WriteLine("Unable to parse team {0}", Line[0]);
+						log.ErrorFormat("Unable to parse team {0}", Line[0]);
 					}
 				}
 			}
-			sr.Close();
+
+		}
+
+		public void GenerateMatchSchedule()
+		{
+			log.Info("Begin generating team match schedule.");
+			ReadParticipants();
 
 			SmoothDances.Dances = new List<Dance> { Waltz, Tango, Foxtrot };
 			SmoothDances.GenerateSchedule();
@@ -183,7 +191,10 @@ namespace FirstStudioTournamentScheduler
 			RythmDances.GenerateSchedule();
 
 			PrintFullMatchSchedule();
+			log.Info("Finished generating team match schedule.");
+			log.Info("-----------------------------------------------------------");
 		}
+
 
 		/// <summary>
 		/// The main entry point for the application.
