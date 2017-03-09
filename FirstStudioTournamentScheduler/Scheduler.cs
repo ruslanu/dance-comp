@@ -52,22 +52,19 @@ namespace FirstStudioTournamentScheduler
 		MatchBlock SmoothDances = new MatchBlock("Smooth and Standard Dances");
 		MatchBlock RythmDances = new MatchBlock("Rythm and Latin Dances");
 
-		public int ParseNumDances(string NumDances, string FullLine)
+		public bool CheckAndApplyPairToDance(Dance Dance, DancingPair Pair, string StrNumDances, string FullLine)
 		{
-			int ret = 0;
-			if (!String.IsNullOrEmpty(NumDances))
+			int NumDances = 0;
+			if (!String.IsNullOrEmpty(StrNumDances))
 			{
-				try
+				if (!int.TryParse(StrNumDances, out NumDances))
 				{
-					ret = int.Parse(NumDances);
-				}
-				catch (FormatException)
-				{
-					log.ErrorFormat("Unable to parse num of dances {0} in {1}", NumDances, FullLine);
+					log.ErrorFormat("Unable to parse num of dances <{0}> in {1}", StrNumDances, FullLine);
 				}
 			}
-			return ret;
+			return NumDances > 0 && Dance.AddPair(Pair, NumDances);
 		}
+
 		public void PrintFullMatchSchedule()
 		{
 			StringBuilder sb = new StringBuilder();
@@ -124,55 +121,62 @@ namespace FirstStudioTournamentScheduler
 								Rank = Line[(int)FormFields.Rank],
 							};
 
-							if (Line.Count() > (int)FormFields.NumWaltz)
+							if (pair.IsValidDancers)
 							{
-								Waltz.AddPair(pair, ParseNumDances(Line[(int)FormFields.NumWaltz], CurrLine));
-							}
+								if (Line.Count() > (int)FormFields.NumWaltz)
+								{
+									CheckAndApplyPairToDance(Waltz, pair, Line[(int)FormFields.NumWaltz], CurrLine);
+								}
 
-							if (Line.Count() > (int)FormFields.NumTango)
-							{
-								Tango.AddPair(pair, ParseNumDances(Line[(int)FormFields.NumTango], CurrLine));
-							}
+								if (Line.Count() > (int)FormFields.NumTango)
+								{
+									CheckAndApplyPairToDance(Tango, pair, Line[(int)FormFields.NumTango], CurrLine);
+								}
 
-							if (Line.Count() > (int)FormFields.NumFoxtrot)
-							{
-								Foxtrot.AddPair(pair, ParseNumDances(Line[(int)FormFields.NumFoxtrot], CurrLine));
-							}
+								if (Line.Count() > (int)FormFields.NumFoxtrot)
+								{
+									CheckAndApplyPairToDance(Foxtrot, pair, Line[(int)FormFields.NumFoxtrot], CurrLine);
+								}
 
-							if (Line.Count() > (int)FormFields.NumChacha)
-							{
-								Chacha.AddPair(pair, ParseNumDances(Line[(int)FormFields.NumChacha], CurrLine));
-							}
+								if (Line.Count() > (int)FormFields.NumChacha)
+								{
+									CheckAndApplyPairToDance(Chacha, pair, Line[(int)FormFields.NumChacha], CurrLine);
+								}
 
-							if (Line.Count() > (int)FormFields.NumRumba)
-							{
-								Rumba.AddPair(pair, ParseNumDances(Line[(int)FormFields.NumRumba], CurrLine));
-							}
+								if (Line.Count() > (int)FormFields.NumRumba)
+								{
+									CheckAndApplyPairToDance(Rumba, pair, Line[(int)FormFields.NumRumba], CurrLine);
+								}
 
-							if (Line.Count() > (int)FormFields.NumSwing)
-							{
-								Swing.AddPair(pair, ParseNumDances(Line[(int)FormFields.NumSwing], CurrLine));
-							}
+								if (Line.Count() > (int)FormFields.NumSwing)
+								{
+									CheckAndApplyPairToDance(Swing, pair, Line[(int)FormFields.NumSwing], CurrLine);
+								}
 
-							if (Line.Count() > (int)FormFields.NumHustle)
-							{
-								Hustle.AddPair(pair, ParseNumDances(Line[(int)FormFields.NumHustle], CurrLine));
-							}
+								if (Line.Count() > (int)FormFields.NumHustle)
+								{
+									CheckAndApplyPairToDance(Hustle, pair, Line[(int)FormFields.NumHustle], CurrLine);
+								}
 
-							if (Line.Count() > (int)FormFields.NumBolero)
-							{
-								Bolero.AddPair(pair, ParseNumDances(Line[(int)FormFields.NumBolero], CurrLine));
-							}
+								if (Line.Count() > (int)FormFields.NumBolero)
+								{
+									CheckAndApplyPairToDance(Bolero, pair, Line[(int)FormFields.NumBolero], CurrLine);
+								}
 
-							if (Line.Count() > (int)FormFields.NumBachata)
+								if (Line.Count() > (int)FormFields.NumBachata)
+								{
+									CheckAndApplyPairToDance(Bachata, pair, Line[(int)FormFields.NumBachata], CurrLine);
+								}
+							}
+							else
 							{
-								Bachata.AddPair(pair, ParseNumDances(Line[(int)FormFields.NumBachata], CurrLine));
+								log.ErrorFormat("Unable to read valid dancers from <{0}>", CurrLine);
 							}
 						}
 					}
 					catch (ArgumentException)
 					{
-						log.ErrorFormat("Unable to parse team {0}", Line[0]);
+						log.ErrorFormat("Unable to parse team <{0}>", Line[0]);
 					}
 				}
 			}
