@@ -253,5 +253,110 @@ namespace FirstStudioTournamentScheduler
 				Heats[i].DumpToLog(String.Format("Heat #{0}", i + 1));
 			}
 		}
+
+		#region new way of sorting
+
+		public bool BalanceHeatsNewWay()
+		{
+			bool changed = false;
+
+			// Create list of heats larger than max desired and candidates to get pairs
+			List<Heat> crowded = Heats.FindAll(h => h.Pairs.Count >= MAX_DESIRED_CAPACITY);
+			List<Heat> candidates = Heats.FindAll(h => h.Pairs.Count < MAX_DESIRED_CAPACITY);
+			log.InfoFormat("BalanceHeatsNewWay begin: {0} overcrowded heats {1} candidates to get pairs.", crowded.Count, candidates.Count);
+
+			// Sort crowded heats in descending order
+			crowded.Sort((h1, h2) => h2.Pairs.Count.CompareTo(h1.Pairs.Count));
+
+			for (int i = 0; i < crowded.Count; i++)
+			{
+				Heat currcrowded = crowded[i];
+				// Sort candidates in ascending order
+				candidates.Sort((h1, h2) => h1.Pairs.Count.CompareTo(h2.Pairs.Count));
+				for (int j = 0; j < candidates.Count; j++)
+				{
+					Heat currcandidate = candidates[j];
+					if (currcrowded.Pairs.Count <= currcandidate.Pairs.Count + 1)
+					{
+						// No need to continue, crowded heat downsized enough
+						break;
+					}
+					while (currcrowded.Pairs.Count > currcandidate.Pairs.Count + 1)
+					{
+						foreach (DancingPair pair in currcrowded.Pairs)
+						{
+							if (currcandidate.CanAddPair(pair))
+							{
+								log.InfoFormat("Moving pair <{0}>-<{1}> from heat with {2} pairs to heat with {3} pairs",
+									pair.Dancer1, pair.Dancer2, currcrowded.Pairs.Count, currcandidate.Pairs.Count);
+								currcandidate.Pairs.Add(pair);
+								currcrowded.Pairs.Remove(pair);
+								changed = true;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			log.InfoFormat("BalanceHeatsNewWay end: {0} overcrowded heats {1} underfilled heats.",
+				Heats.Count(h => h.Pairs.Count >= MAX_DESIRED_CAPACITY), Heats.Count(h => h.Pairs.Count < MIN_DESIRED_CAPACITY));
+
+			return changed;
+		}
+
+		public bool CreateInitialHeatsNewWay()
+		{
+			// Start with at least (n/6)+1 heats but no less than top dancer
+			if (InitialPool.Pairs.Count > 0)
+			{
+				MinHeats = Dancers.Values.Max();
+				int InitialHeats = Math.Max(MinHeats, (InitialPool.Pairs.Count / 6) + 1);
+
+				string TopDancer = Dancers.First(d => d.Value == MinHeats).Key;
+				log.InfoFormat("For dance <{0}> top dancer is <{1}> with {2} heats participation. {3} heats will be initially created.",
+					Name, TopDancer, MinHeats, InitialHeats);
+
+				// Each heat should be new reference
+				for (int i = 0; i < InitialHeats; i++)
+				{
+					Heats.Add(new Heat());
+				}
+			}
+			return Heats.Count > 0;
+		}
+
+		public bool PopulateHeatsNewWay()
+		{
+			log.InfoFormat("Populate heats (new way) for <{0}>...", Name);
+			bool ret = CreateInitialHeatsNewWay();
+			if (ret)
+			{
+				InitialPool.DumpToLog("Before sorting");
+				ret = SeedPairsToHeats();
+				if (ret)
+				{
+					DumpHeatsToLog("After first seeding");
+
+					if (BalanceHeatsNewWay())
+					{
+						DumpHeatsToLog("After leveling down heats");
+					}
+					else
+					{
+						log.Info("No changes were made during attempt to rebalance heats.");
+					}
+				}
+			}
+			else
+			{
+				log.ErrorFormat("Cannot populate dance {0} - no heats created for the dance!", Name);
+			}
+			log.InfoFormat("Finished to populate heats (new way) for <{0}>...", Name);
+
+			return ret;
+		}
+
+		#endregion
 	}
 }

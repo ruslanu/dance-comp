@@ -30,11 +30,11 @@ namespace FirstStudioTournamentScheduler
 		{
 			foreach(Dance dance in Dances)
 			{
-				dance.PopulateHeats();
+				dance.PopulateHeatsNewWay();
 				foreach(Heat heat in dance.Heats)
 				{
 					BlockHeats.Add(new BlockHeat {
-						SortIndex = Scheduler.glbRandom.Next(65536),
+						SortIndex = Scheduler.glbRandom.Next(256),
 						DanceName = dance.Name,
 						Heat = heat,
 					});
