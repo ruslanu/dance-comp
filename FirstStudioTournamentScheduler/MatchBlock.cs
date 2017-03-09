@@ -54,9 +54,20 @@ namespace FirstStudioTournamentScheduler
 			log.InfoFormat("End of MatchBlock.");
 		}
 
-		//public void PrintSchedule(StreamWriter writer, int InitialNumber)
-		//{
-		//
-		//}
+		public void DumpSchedule(StringBuilder ScheduleContent, int InitialNumber)
+		{
+			ScheduleContent.AppendLine(Name);
+			for (int i = 0; i < BlockHeats.Count; i++)
+			{
+				BlockHeat heat = BlockHeats[i];
+				ScheduleContent.AppendLine();
+				ScheduleContent.AppendLine(String.Format("Heat {0} - {1}", InitialNumber + i + 1, heat.DanceName));
+				foreach (DancingPair pair in heat.Heat.Pairs)
+				{
+					ScheduleContent.AppendLine(String.Format("{0}\t{1}\t{2}\t{3}",
+						pair.Team, pair.Dancer1, pair.Dancer2, pair.Rank));
+				}
+			}
+		}
 	}
 }

@@ -5,12 +5,16 @@ using System.Windows.Forms;
 using System.IO;
 using log4net;
 using log4net.Config;
+using System.Text;
 
 namespace FirstStudioTournamentScheduler
 {
 
 	public class Scheduler
 	{
+		public string SourceFileName = "entryforms.csv";
+		public string DestFileName = "matchschedule.txt";
+
 		public static Random glbRandom = new Random();
 
 		List<DancingPair> DancingPairs = new List<DancingPair>();
@@ -43,6 +47,9 @@ namespace FirstStudioTournamentScheduler
 		Dance Bolero = new Dance { Name = "Bolero", isRythm = true };
 		Dance Bachata = new Dance { Name = "Bachata", isRythm = true };
 
+		MatchBlock SmoothDances = new MatchBlock("Smooth and Standard Dances");
+		MatchBlock RythmDances = new MatchBlock("Rythm and Latin Dances");
+
 		public int ParseNumDances(string NumDances, string FullLine)
 		{
 			int ret = 0;
@@ -59,20 +66,33 @@ namespace FirstStudioTournamentScheduler
 			}
 			return ret;
 		}
+		public void PrintFullMatchSchedule()
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.AppendLine("Blue, Red and White Team Match 03/12/2017");
+			sb.AppendLine("Please report all sorting issues to Ruslan Usmanov to improve our algorithm. Thank you.");
+			sb.AppendLine();
+
+			SmoothDances.DumpSchedule(sb, 0);
+			RythmDances.DumpSchedule(sb, SmoothDances.BlockHeats.Count);
+
+			sb.AppendLine();
+			sb.AppendLine("End of competition.");
+
+			File.WriteAllText(DestFileName, sb.ToString());
+		}
 
 		public void ReadParticipants()
 		{
 			// Browse for file
-			string filename = "entryforms.csv";
-
-			if (!File.Exists(filename))
+			if (!File.Exists(SourceFileName))
 			{
-				Console.WriteLine("Input file {0} not found!", filename);
+				Console.WriteLine("Input file {0} not found!", SourceFileName);
 				return;
 			}
 
 			// Open file
-			StreamReader sr = new StreamReader(filename);
+			StreamReader sr = new StreamReader(SourceFileName);
 
 			// Store in data structure
 			// Content of each line in .csv file
@@ -156,13 +176,13 @@ namespace FirstStudioTournamentScheduler
 			}
 			sr.Close();
 
-			MatchBlock SmoothDances = new MatchBlock("Smooth Dances");
 			SmoothDances.Dances = new List<Dance> { Waltz, Tango, Foxtrot };
 			SmoothDances.GenerateSchedule();
 
-			MatchBlock RythmDances = new MatchBlock("Rythm Dances");
 			RythmDances.Dances = new List<Dance> { Chacha, Rumba, Swing, Hustle, Bolero, Bachata };
 			RythmDances.GenerateSchedule();
+
+			PrintFullMatchSchedule();
 		}
 
 		/// <summary>
