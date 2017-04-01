@@ -100,26 +100,22 @@ namespace FirstStudioTournamentScheduler
 			return result;
 		}
 
-		public bool SeedPairsToHeats()
+		public void SeedPairsToHeats()
 		{
 			while(InitialPool.Pairs.Count > 0)
 			{
 				DancingPair pair = InitialPool.Pairs[0];
 				Heat heat = FindHeatForPair(pair);
-				if (heat != null)
+				if (heat == null)
 				{
-					heat.Pairs.Add(pair);
-					InitialPool.Pairs.RemoveAt(0);
+					log.ErrorFormat("Error: cannot find a heat for pair {0}: <{1}> - <{2}>! New heat will be created",
+						pair.Team, pair.Dancer1, pair.Dancer2);
+					heat = new Heat();
+					Heats.Add(heat);
 				}
-				else
-				{
-					log.ErrorFormat("Fatal error: cannot find a heat for pair {0}: <{1}> - <{2}>!", pair.Team, pair.Dancer1, pair.Dancer2);
-					break;
-				}
+				heat.Pairs.Add(pair);
+				InitialPool.Pairs.RemoveAt(0);
 			}
-			
-			// Succeeded if all pairs transferred to heats
-			return InitialPool.Pairs.Count == 0;
 		}
 
 		public void DispatchHighAttendeeHeats()
@@ -212,39 +208,6 @@ namespace FirstStudioTournamentScheduler
 			}
 		}
 
-		public bool PopulateHeats()
-		{
-			log.InfoFormat("Populate heats for <{0}>...", Name);
-			bool ret = CreateInitialHeats();
-			if (ret)
-			{
-				InitialPool.DumpToLog("Before sorting");
-				ret = SeedPairsToHeats();
-				if (ret)
-				{
-					DumpHeatsToLog("After first seeding");
-
-					// Try to free up some space in overfilled heats (num > 6)
-					DispatchHighAttendeeHeats();
-					DumpHeatsToLog("After dispatching high attendee heats");
-
-					// Remove empty and try to dispatch low capacity heats (num < 4)
-					DispatchLowAttendeesHeats();
-					DumpHeatsToLog("After dispatching low attendee heats");
-
-					// Second attempt to level down overfilled heats (num > 6)
-					DispatchHighAttendeeHeats();
-					DumpHeatsToLog("After second dispatching (leveling down) high attendee heats");
-				}
-			}
-			else
-			{
-				log.ErrorFormat("Cannot populate dance {0} - no heats created for the dance!", Name);
-			}
-
-			return ret;
-		}
-
 		public void DumpHeatsToLog(string title)
 		{
 			log.InfoFormat("Printing Heats for dance <{0}>, stage <{1}> total {2} heats.", Name, title, Heats.Count);
@@ -260,10 +223,13 @@ namespace FirstStudioTournamentScheduler
 		{
 			bool changed = false;
 
+			int averagePairs = (int)Heats.Average(h => h.Pairs.Count);
+
 			// Create list of heats larger than max desired and candidates to get pairs
-			List<Heat> crowded = Heats.FindAll(h => h.Pairs.Count >= MAX_DESIRED_CAPACITY);
-			List<Heat> candidates = Heats.FindAll(h => h.Pairs.Count < MAX_DESIRED_CAPACITY);
-			log.InfoFormat("BalanceHeatsNewWay begin: {0} overcrowded heats {1} candidates to get pairs.", crowded.Count, candidates.Count);
+			List<Heat> crowded = Heats.FindAll(h => h.Pairs.Count > averagePairs + 1);
+			List<Heat> candidates = Heats.FindAll(h => h.Pairs.Count < averagePairs);
+			log.InfoFormat("BalanceHeatsNewWay begin: {0} average pairs in heat, {1} overcrowded heats {2} candidates to get pairs.",
+				averagePairs, crowded.Count, candidates.Count);
 
 			// Sort crowded heats in descending order
 			crowded.Sort((h1, h2) => h2.Pairs.Count.CompareTo(h1.Pairs.Count));
@@ -300,7 +266,7 @@ namespace FirstStudioTournamentScheduler
 			}
 
 			log.InfoFormat("BalanceHeatsNewWay end: {0} overcrowded heats {1} underfilled heats.",
-				Heats.Count(h => h.Pairs.Count >= MAX_DESIRED_CAPACITY), Heats.Count(h => h.Pairs.Count < MIN_DESIRED_CAPACITY));
+				Heats.Count(h => h.Pairs.Count > averagePairs + 1), Heats.Count(h => h.Pairs.Count < averagePairs));
 
 			return changed;
 		}
@@ -333,19 +299,16 @@ namespace FirstStudioTournamentScheduler
 			if (ret)
 			{
 				InitialPool.DumpToLog("Before sorting");
-				ret = SeedPairsToHeats();
-				if (ret)
-				{
-					DumpHeatsToLog("After first seeding");
+				SeedPairsToHeats();
+				DumpHeatsToLog("After first seeding");
 
-					if (BalanceHeatsNewWay())
-					{
-						DumpHeatsToLog("After leveling down heats");
-					}
-					else
-					{
-						log.Info("No changes were made during attempt to rebalance heats.");
-					}
+				if (BalanceHeatsNewWay())
+				{
+					DumpHeatsToLog("After leveling down heats");
+				}
+				else
+				{
+					log.Info("No changes were made during attempt to rebalance heats.");
 				}
 			}
 			else
