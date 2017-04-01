@@ -60,7 +60,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlexCode.cs" />
     <Compile Include="Dance.cs" />
     <Compile Include="DancingPair.cs" />
     <Compile Include="Form1.cs">

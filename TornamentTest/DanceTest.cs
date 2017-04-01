@@ -152,7 +152,7 @@ namespace TournamentTest
 			Waltz.AddPair(pair2, 9);
 			Waltz.AddPair(pair3, 3);
 
-			bool actual = Waltz.PopulateHeats();
+			bool actual = Waltz.PopulateHeatsNewWay();
 			Assert.IsTrue(actual, "PopulateHeats() should succeed");
 		}
 	}

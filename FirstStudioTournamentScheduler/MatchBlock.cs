@@ -49,7 +49,7 @@ namespace FirstStudioTournamentScheduler
 			log.InfoFormat("**** MatchBlock <{0}> ****", Name);
 			for(int i = 0; i < BlockHeats.Count; i++)
 			{
-				log.InfoFormat("Heat #{0} - {1} - {2} dancers", i + 1, BlockHeats[i].DanceName, BlockHeats[i].Heat.Pairs.Count);
+				log.InfoFormat("Heat #{0} - {1} - {2} pairs", i + 1, BlockHeats[i].DanceName, BlockHeats[i].Heat.Pairs.Count);
 			}
 			log.InfoFormat("End of MatchBlock.");
 		}
