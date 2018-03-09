@@ -36,6 +36,7 @@ namespace FirstStudioTournamentScheduler
 			NumHustle = 11,
 			NumBolero = 12,
 			NumBachata = 13,
+			NumSalsa = 14,
 		}
 		const int MIN_REQ_FIELDS = 6;
 
@@ -48,6 +49,7 @@ namespace FirstStudioTournamentScheduler
 		Dance Hustle = new Dance { Name = "Hustle", isRythm = true };
 		Dance Bolero = new Dance { Name = "Bolero", isRythm = true };
 		Dance Bachata = new Dance { Name = "Bachata", isRythm = true };
+		Dance Salsa = new Dance { Name = "Salsa", isRythm = true };
 
 		MatchBlock SmoothDances = new MatchBlock("SMOOTH Heats");
 		MatchBlock RythmDances = new MatchBlock("RHYTM Heats");
@@ -70,9 +72,9 @@ namespace FirstStudioTournamentScheduler
 		public void PrintFullMatchSchedule()
 		{
 			StringBuilder sb = new StringBuilder();
-			sb.AppendLine("Blue, Red and White Team Match 04/02/2017");
+			sb.AppendLine("Blue, Red and White Team Match 03/11/2018");
 			sb.AppendLine();
-			sb.AppendLine("Adjudicated by Martin Rivera");
+			sb.AppendLine("Adjudicated by ");
 			sb.AppendLine();
 			sb.AppendLine();
 
@@ -172,6 +174,11 @@ namespace FirstStudioTournamentScheduler
 							CheckAndApplyPairToDance(Bachata, pair, Line[(int)FormFields.NumBachata], CurrLine);
 						}
 
+						if (Line.Count() > (int)FormFields.NumSalsa)
+						{
+							CheckAndApplyPairToDance(Salsa, pair, Line[(int)FormFields.NumSalsa], CurrLine);
+						}
+
 						// Apply dancers to stats
 						DancerList.Add(pair.Dancer1.ToUpperInvariant());
 						DancerList.Add(pair.Dancer2.ToUpperInvariant());
@@ -197,7 +204,7 @@ namespace FirstStudioTournamentScheduler
 			SmoothDances.Dances = new List<Dance> { Waltz, Tango, Foxtrot };
 			SmoothDances.GenerateSchedule();
 
-			RythmDances.Dances = new List<Dance> { Chacha, Rumba, Swing, Hustle, Bolero, Bachata };
+			RythmDances.Dances = new List<Dance> { Chacha, Rumba, Swing, Hustle, Bolero, Bachata, Salsa };
 			RythmDances.GenerateSchedule();
 
 			PrintFullMatchSchedule();
