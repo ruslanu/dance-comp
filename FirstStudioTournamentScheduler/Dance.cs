@@ -276,8 +276,9 @@ namespace FirstStudioTournamentScheduler
 			// Start with at least (n/6)+1 heats but no less than top dancer
 			if (InitialPool.Pairs.Count > 0)
 			{
+				int AverageCapacity = isRythm ? 6 : 5; // TODO: Optimize with InitialHeats
 				MinHeats = Dancers.Values.Max();
-				int InitialHeats = Math.Max(MinHeats, (InitialPool.Pairs.Count / 6) + 1);
+				int InitialHeats = Math.Max(MinHeats, (InitialPool.Pairs.Count / AverageCapacity) + (isRythm ? 1 : 0));
 
 				string TopDancer = Dancers.First(d => d.Value == MinHeats).Key;
 				log.InfoFormat("For dance <{0}> top dancer is <{1}> with {2} heats participation. {3} heats will be initially created.",
